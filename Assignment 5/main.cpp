@@ -440,7 +440,8 @@ void BigInt::print() const{
     }
     for (int i  = 0; i < this->digits.getSize() ; i++){
         
-        cout << this->digits.getItem(i);
+        //cout << this->digits.getItem(i);
+        this->digits.printArray(true);
     }
     cout << endl;
 }
@@ -750,22 +751,51 @@ void BigInt::divide(const BigInt & a){
         return;
     }
     
+    //Check for divide by 1
+    BigInt one;
+    one.assign(1);
+    if(a.compareAbsoluteValue(one) == 0){
+        cout << "divide by 1" << endl;
+        return;
+    }
+    
+    
+    frontDigits.printArray(true);
+    
     SmcArray<int> result;
     result.changeSize(this->digits.getSize());
     int numTimesSubtracted = 0; //Initializing variable that counts the number of times subtracting
     
     frontPart.digits = frontDigits; //Copying front digits into part digits
-    
+    //frontPart.digits.printArray(true);
     //When the number of digits in numerator and denominator are the same and making sure the numbers are different
+    
+    int tempIndex = numeratorIndex;
+    
+    //result.printArray(true);
+    cout << "temp: " << tempIndex << endl;
     while (numeratorIndex == this->digits.getSize() && (a.compareAbsoluteValue(frontPart) != 1)){
         frontPart.subtract(a);
         //frontPart.print(); // for debugging
         numTimesSubtracted = numTimesSubtracted + 1;
-        result.setItem(numTimesSubtracted,numeratorIndex);
+        //result.setItem(numTimesSubtracted, numeratorIndex);
+        
+        tempIndex -- ;
+        //cout << numeratorIndex;
+
         //result.printArray(true); // for debugging
     }
+    
+    if(numTimesSubtracted >0){
+        this->assign(numTimesSubtracted);
+        return;
+    }
+    //cout << "here" << endl;
+    //frontPart.print();
+    
+    result.printArray(true);
     //When the number of digits in numerator is less than the number of digits in the denominator
-    while(numeratorIndex < this->digits.getSize()){
+    while(numeratorIndex <= this->digits.getSize()){
         //If denominator is larger than the front part of numerator then add a digit to numerator number
         numTimesSubtracted = 0; //Setting counter equal to zero
         while(a.compareAbsoluteValue(frontPart) == 1 ){ //Do while the
@@ -799,6 +829,9 @@ void BigInt::divide(const BigInt & a){
 //Comparing two numbers to check if they are >, <, =
 // -1 if a is greater than this->digits; 0 if they are equal; 1 if this-> digits is greater than 'a'
 int BigInt::compare(const BigInt & a) const{
+    
+    //this->print();
+    //a.print();
     if(this->getNegative() && a.getPositive()){
         return -1;
     }else if(this->getPositive() && a.getNegative()){
@@ -948,7 +981,7 @@ void testDivideCase(int numA, int numB){
     myBigInt.assign(numA);
     secondBigInt.assign(numB);
     myBigInt.divide(secondBigInt);
-    
+    cout << "testing:" << numA << "/" << numB << endl;
     BigInt result;
     result.assign(numA / numB);
     if(myBigInt.compare(result) == 0){
@@ -1244,9 +1277,9 @@ void testDivide(){
     testDivideCase(1009, -2);
     testDivideCase(100000009, 2);
     testDivideCase(1000009, -2);
-    testDivideCase(1009, 2);
-    testDivideCase(100000009, 2);
-    testDivideCase(1000009, 2);
+    //testDivideCase(1009, 2);
+    //testDivideCase(100000009, 2);
+    //testDivideCase(1000009, 2);
     cout << endl;
 }
 
@@ -1391,17 +1424,21 @@ int main(int argc, const char * argv[]) {
     //testSubtractionNegative();
     //testRPNProvidedUseCases();
     
-     string inputString;
-     while (true) {
-     cout << endl;
-     cout << "Enter RPN expression OR Enter Q or q to quit: ";
-     getline(cin, inputString);
-     if (inputString == "q" || inputString == "Q" ) {
-     break;
-     }
-     vector<string> parsedInput = parseString(inputString);
-     RPNCalcuator(parsedInput);
-     }
+    
+    
+    /*
+    string inputString;
+    while (true) {
+        cout << endl;
+        cout << "Enter RPN expression OR Enter Q or q to quit: ";
+        getline(cin, inputString);
+        if (inputString == "q" || inputString == "Q" ) {
+            break;
+        }
+        vector<string> parsedInput = parseString(inputString);
+        RPNCalcuator(parsedInput);
+    }
+     */
     cout << "end" << endl;
     return 0;
 }
