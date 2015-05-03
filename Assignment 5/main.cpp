@@ -631,10 +631,6 @@ void BigInt::multiply(const BigInt & a){
     int multNum = 0;
     int carry = 0;
     int zeroIndex = 0;
-    
-    //cout << " index = " << this->digits.getSize() - 1 << " maxindex = " << a.digits.getSize() - 1 << endl;
-    //cout << " a size = " << a.digits.getSize()<< endl;
-    
     vector <BigInt> middleStepNumbers;
     for( int j = a.digits.getSize() - 1 ; j >= 0; j--){
         //Middle Line
