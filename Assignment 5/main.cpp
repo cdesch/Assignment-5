@@ -1,6 +1,5 @@
 //
-//  Assignment 5
-//
+// Assignment 5
 //
 
 #include <iostream>
@@ -9,8 +8,8 @@
 #include <sstream>
 #include <fstream>
 
-using namespace std;
 enum TOKEN { ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION, NUMBER };
+using namespace std;
 
 //Constants
 const int defaultSize = 1; //default size is 1
@@ -69,7 +68,6 @@ protected:
 //Default Constructor
 template <class Element>
 SmcArray<Element>::SmcArray(){
-    //cout << __PRETTY_FUNCTION__ << endl;
     //Set the array using the defaults
     this->size = defaultSize;
     //Allocate an array of this->size
@@ -122,6 +120,10 @@ void SmcArray<Element>::setItem(Element value, int index){
         //Write to the array
         this->items[index] = value; //writes the value into the item array
     }else if(index > this->size-1){
+        //Two Routes can be taken
+        //1st -  Use helper function pushItem() to add to end of array
+        //this->pushItem(value);  //For the record, this method was a better option.
+        //2nd - Adjust the size, then set the item
         this->changeSize(this->size+1); //Increase the size by 1
         this->setItem(value,this->size-1); //Recursive Call, use "this->size-1" in the event that index is n+2 greater than the size of the original size of the array
     }else{
@@ -135,11 +137,9 @@ template <class Element>
 Element SmcArray<Element>::getItem(int index){
     //Check to see if the index can be retrieved
     if(this->checkIndexBounds(index)){
-        //Write to the array
         return this->items[index]; //writes the value into the item array
     }else{
         //Even though this will return the default value the user is prompted with a message indicating that a default value has been returned
-        //cerr << __PRETTY_FUNCTION__ << "- WARNING: Returning Default Value\n ";//_PRETTY_FUNCTION helps with debugging by identifying the name of where error is located
         return this->defaultValue; //returns the default value
     }
 }
@@ -161,7 +161,8 @@ Element SmcArray<Element>::getItem(int index) const{
 template <class Element>
 void SmcArray<Element>::insertItem(Element value, int index){
     //extend the array by 1
-    //update the size by adding 1 and inserts the value into the array and Checks that within bounds
+    //update the size by adding 1 and inserts the value into the array
+    //Checks that within bounds
     if (minSize <= index &&  index <= this->getSize() ){
         Element * newArray = new Element[this->getSize()+1];
         //Copy array that is increased by 1 at given index from the original array into the new array
@@ -170,10 +171,8 @@ void SmcArray<Element>::insertItem(Element value, int index){
         else{
             //sets the values in array before the inserted value
             for (int i = 0; i < index; i++) newArray[i] = items[i];
-            
             //inserts the value after the given index
             newArray[index] = value;
-            
             //sets the values in the array after the inserted value
             for (int i = index+1; i < this->size+1; i++) newArray[i] = items[i-1];
         }
@@ -183,16 +182,15 @@ void SmcArray<Element>::insertItem(Element value, int index){
         this->items = newArray;
         this->size++;
     }else{
-        cerr << "The program is crashing\n"; //Error statement
-        throw "array out of bounds exception";
+        cerr << "Error: Program is crashing\n"; //Error statement
+        throw "Array out of bounds exception";
     }
 }
 
 //Remove an item at a given index
 template <class Element>
 void SmcArray<Element>::removeItem(int index){
-    //Remove 1 item from the array
-    //Decrease the size of the array
+    //Remove 1 item from the array Decrease the size of the array
     if (index < 0 || index >=size) cout << "The index of the item to be removed is out of range." << endl; //Error statement
     else{
         for (int i = index; i < this->size-1; i++) //starts the loop where the item is removed and goes to one less than original array size
@@ -209,8 +207,7 @@ void SmcArray<Element>::printArray(bool linear) const{
             cout << this->items[i] << " ";
         }
     }else{
-        //Prints what is in the array
-        //loop through an print each item
+        //Prints what is in my array - loop through an print each item
         for (int i=0; i < this->size; i++){
             cout << "Index is: " << i << " Array value is: " << this->items[i] << endl;
         }
@@ -235,7 +232,7 @@ void SmcArray<Element>::copyArrayIncreasedSize(int s){
         this->items = newArray;
         this->size = s;
     }else{
-        cerr << "The program is crashing\n"; //Error statement
+        cerr << "Error: program is crashing\n"; //Error statement
         throw "Array out of bounds exception";
     }
 }
@@ -270,9 +267,9 @@ void SmcArray<Element>::changeSize(unsigned int newSize){
     if (/* DISABLES CODE */ (false)) {
         cerr << __PRETTY_FUNCTION__ << " a default value has not been set\n";////_PRETTY_FUNCTION helps with debugging by identifying the name of where error is located
     }
+    
     //First check to make sure the new size is within the bounds of the system
     if(newSize > minSize && newSize < maxSize){
-        
         Element * newArray = new Element[newSize];
         //Copy array that is decreased by 1 at given index from the original array into the new array
         for (int i = 0; i < newSize; i++){
@@ -315,12 +312,12 @@ public:
     int compare(const BigInt & a) const;
     int compareAbsoluteValue(const BigInt & a) const;
     int getSize() const;
-    void setDigits(SmcArray<int> a);
     int convertCharToInt(char c);
-    void removeLeadingZeros();
     bool handleNegativesForAddition(const BigInt & a);
     bool handleNegativesForSubtraction(const BigInt & a);
-
+    
+    void setDigits(SmcArray<int> a);
+    void removeLeadingZeros();
     void setNegative(bool negative){
         this->negative = negative;
     }
@@ -340,7 +337,6 @@ public:
     void setNegativeHandledDivideOverride(bool negOverride){
         this->negativeHandledDivideOverride = negOverride;
     }
-    
 };
 
 //Constructor
@@ -359,7 +355,6 @@ BigInt::~BigInt(){
 void BigInt::assign(const BigInt & a){
     //Change the existing size to the new size
     this->digits.changeSize(a.getSize());
-    
     this->negative = a.getNegative();
     //Iterate through the array and copy everything over
     for (int i = 0; i < a.getSize(); i++){
@@ -370,9 +365,6 @@ void BigInt::assign(const BigInt & a){
 //Take an integer and split into digits
 void BigInt::assign(int a){
     //Modulus  -- Loop until until no remainder
-    // e.g.            54321
-    //      breaks into 5 4 3 2 1
-    
     if(a < 0){
         this->negative = true;
     }
@@ -394,14 +386,10 @@ void BigInt::assign(int a){
 //Take an integer and split into digits
 void BigInt::assign(long a){
     //Modulus  -- Loop until until no remainder
-    // e.g.            54321
-    //      breaks into 5 4 3 2 1
     if(a < 0){
         this->negative = true;
     }
-    
     a = abs(a);
-    
     long b = a;
     int length = 1;
     while (b /= 10)
@@ -420,7 +408,6 @@ void BigInt::assign(string a){
     //1) Loop through each character in string
     //2) covert that character to an integer
     //3) add that integer into the "this->digits" array by using setItem
-    
     if(a[0] == '-'){
         this->negative = true;
         a.erase(0,1);
@@ -439,18 +426,13 @@ void BigInt::print() const{
         cout << "-" ;
     }
     for (int i  = 0; i < this->digits.getSize() ; i++){
-        
-        //cout << this->digits.getItem(i);
-        this->digits.printArray(true);
+        cout << this->digits.getItem(i);
     }
     cout << endl;
 }
 
 bool BigInt::handleNegativesForAddition(const BigInt & a){
-    
-    //cout << __PRETTY_FUNCTION__ << endl;
     this->negativeHandled = true;
-    
     if(this->getPositive() && a.getPositive()){
         return false;
     }else if(this->getPositive() && a.getNegative()){
@@ -470,8 +452,6 @@ bool BigInt::handleNegativesForAddition(const BigInt & a){
 
 //Adding two large integers that have been split into an array of large digits
 void BigInt::add(const BigInt & a){
-    
-    //cout << __PRETTY_FUNCTION__ << endl;
     if(!this->negativeHandledDivideOverride){
         if(!this->negativeHandled){
             if(this->handleNegativesForAddition(a)){
@@ -479,7 +459,6 @@ void BigInt::add(const BigInt & a){
             }
         }
     }
-    
     int carry = 0;
     int sumNum = 0;
     //Check if equal to 0
@@ -491,10 +470,8 @@ void BigInt::add(const BigInt & a){
             return;
         }
     }
-    
     int indexDifference = abs(this->digits.getSize() - a.digits.getSize()); //Indexdifference is the difference between the two nubers 5 and 2 --- difference is 3
     int indexSpread = this->digits.getSize() - a.digits.getSize(); //
-    
     //Determines the size of loop if a.digits is less than digits then index is one less than a.digits
     if(this->digits.getSize() < a.digits.getSize()){
         //Insert leading 0's to change the size of this->digits
@@ -503,9 +480,7 @@ void BigInt::add(const BigInt & a){
         }
         indexDifference = 0;
     }
-    
     int startingIndex = this->digits.getSize()-1;
-    //cout << endl << "          starting index " << startingIndex << " indexDifference " << indexDifference << endl;
     for(int i = startingIndex; i >= indexDifference; i--){
         if(this->digits.getSize() >= a.digits.getSize()){
             sumNum = this->digits.getItem(i) + a.digits.getItem(i-indexDifference) + carry;
@@ -521,7 +496,6 @@ void BigInt::add(const BigInt & a){
         }
         this->digits.setItem(sumNum, i);
     }
-    
     //if A was the larger, copy the rest of the items down into the this->digits
     if(indexSpread < 0){
         for (int k = indexDifference -1; k >= 0; k--){
@@ -530,27 +504,22 @@ void BigInt::add(const BigInt & a){
     }
     //If there is a carry
     if(carry == 1){
-        //cout << "Index Difference:  " << indexDifference << "... " << indexDifference -1 << endl;
         //Check if the carry needs to be inserted at the beginning of the array at in 0
         if(indexDifference - 1 < 0){
             this->digits.insertItem(carry, 0);
         }else{
             if(indexDifference - 1 >= 1){
                 while (indexDifference - 1 >= 0 && carry ==1){
-                    //cout << "Index Difference:  " << indexDifference << "... " << indexDifference -1 << endl;
                     int firstDigit = this->digits.getItem(indexDifference-1);
                     if((firstDigit + carry) > 9){
-                        //Move it up one
-                        //If the carry in addition to the existing digit is larger than 9, we need to carry over to the next number
+                        //Move it up one. If the carry in addition to the existing digit is larger
+                        //than 9, we need to carry over to the next number
                         this->digits.setItem(firstDigit + carry - 10, indexDifference-1);
-                        
                         if(indexDifference - 1 == 0 && carry ==1){
                             this->digits.insertItem(carry, 0);
                             break;
                         }
-                        
                     }else{
-                        
                         //Add the carry to the first digit in the array
                         this->digits.setItem(this->digits.getItem(indexDifference-1)+1, indexDifference-1);
                         break;
@@ -569,17 +538,13 @@ void BigInt::add(const BigInt & a){
                     this->digits.setItem(this->digits.getItem(indexDifference-1)+1, indexDifference-1);
                 }
             }
-            
         }
     }
     this->negativeHandled = false;
 }
 
 bool BigInt::handleNegativesForSubtraction(const BigInt & a){
-    
-    //cout << __PRETTY_FUNCTION__ << endl;
     this->negativeHandled = true;
-    
     if(this->getPositive() && a.getPositive()){
         return false;
     }else if(this->getPositive() && a.getNegative()){
@@ -610,21 +575,17 @@ void BigInt::subtract(const BigInt & a){
     int maxindex = 0;  //maximum index
     int index = 0;
     int diffNum = 0;
-    
     index = this->digits.getSize() - 1;
     maxindex = this->digits.getSize() - a.digits.getSize();
     //Compares two numbers to determine if the the result will be a negative number. If negative result, program ends.
     if(this->compareAbsoluteValue(a) < 0){
-        
         BigInt tempInt;
         tempInt.assign(a);
-        
         if(this->getPositive() && tempInt.getPositive()){
             tempInt.setNegative(true);
         }
         index = tempInt.digits.getSize() - 1;
         maxindex = tempInt.digits.getSize() - this->digits.getSize();
-        
         for(int i = index; i >= 0; i--){
             if(this->digits.getItem(i-maxindex) > tempInt.digits.getItem(i)){
                 tempInt.digits.setItem(tempInt.digits.getItem(i) + 10, i);
@@ -635,7 +596,6 @@ void BigInt::subtract(const BigInt & a){
         }
         this->assign(tempInt);
         this->removeLeadingZeros();
-        
         if(!this->negativeHandled){
             if(this->getNegative() && a.getNegative()){
                 this->setNegative(false);
@@ -644,9 +604,8 @@ void BigInt::subtract(const BigInt & a){
     }else{
         index = this->digits.getSize() - 1;
         maxindex = this->digits.getSize() - a.digits.getSize();
-        
         for(int i = index; i >= 0; i--){
-            //
+            
             if(this->digits.getItem(i) < a.digits.getItem(i-maxindex)){
                 this->digits.setItem(this->digits.getItem(i) + 10, i);
                 this->digits.setItem(this->digits.getItem(i-1)-1, i-1);
@@ -669,7 +628,6 @@ void BigInt::multiply(const BigInt & a){
     }else if(this->getPositive() && a.getNegative()){
         this->setNegative(true);
     }
-    
     int multNum = 0;
     int carry = 0;
     int zeroIndex = 0;
@@ -678,7 +636,6 @@ void BigInt::multiply(const BigInt & a){
     //cout << " a size = " << a.digits.getSize()<< endl;
     
     vector <BigInt> middleStepNumbers;
-    
     for( int j = a.digits.getSize() - 1 ; j >= 0; j--){
         //Middle Line
         SmcArray<int> middleLine(0);
@@ -688,7 +645,6 @@ void BigInt::multiply(const BigInt & a){
         carry = 0;
         for(int i = this->digits.getSize() - 1; i >= 0; i--){
             multNum = this->digits.getItem(i) * a.digits.getItem(j) + carry;
-            //cout << " multNum:  " << multNum << endl;
             if(multNum >= 10){
                 carry = multNum / 10;
                 multNum = multNum % 10;
@@ -705,10 +661,8 @@ void BigInt::multiply(const BigInt & a){
         myMiddleLine.setDigits(middleLine);
         middleStepNumbers.push_back(myMiddleLine);
     }
-    
     BigInt result;
     result.assign(0);
-    
     for(int i = 0; i< middleStepNumbers.size(); i++ ){
         BigInt myInt = middleStepNumbers[i];
         result.add(myInt);
@@ -716,7 +670,6 @@ void BigInt::multiply(const BigInt & a){
     result.setNegative(this->getNegative());
     this->assign(result);
     this->removeLeadingZeros();
-    
     BigInt zero;
     zero.assign(0);
     if(this->compareAbsoluteValue(zero) == 0){
@@ -728,10 +681,8 @@ void BigInt::multiply(const BigInt & a){
 //Dividing two numbers
 void BigInt::divide(const BigInt & a){
     //Assumption: this->digits will always be bigger than 1. A is divisable by B
-    
     this->negativeHandled = true;
     this->negativeHandledDivideOverride = true;
-    
     if(this->getNegative() && a.getNegative()){
         this->setPositive(true);
     }else if(this->getNegative() && a.getPositive()){
@@ -739,7 +690,6 @@ void BigInt::divide(const BigInt & a){
     }else if(this->getPositive() && a.getNegative()){
         this->setNegative(true);
     }
-    
     int numeratorIndex = this->digits.getSize(); //Getting size of numerator *******
     BigInt frontPart;
     frontPart.setNegativeHandledDivideOverride(true);
@@ -750,75 +700,44 @@ void BigInt::divide(const BigInt & a){
     if(a.compareAbsoluteValue(frontPart) == -1){ //Checking to see if numerator is less than the denominator
         return;
     }
-    
     //Check for divide by 1
     BigInt one;
     one.assign(1);
     if(a.compareAbsoluteValue(one) == 0){
-        cout << "divide by 1" << endl;
         return;
     }
-    
-    
-    frontDigits.printArray(true);
-    
     SmcArray<int> result;
     result.changeSize(this->digits.getSize());
     int numTimesSubtracted = 0; //Initializing variable that counts the number of times subtracting
-    
     frontPart.digits = frontDigits; //Copying front digits into part digits
-    //frontPart.digits.printArray(true);
     //When the number of digits in numerator and denominator are the same and making sure the numbers are different
-    
     int tempIndex = numeratorIndex;
-    
-    //result.printArray(true);
-    cout << "temp: " << tempIndex << endl;
     while (numeratorIndex == this->digits.getSize() && (a.compareAbsoluteValue(frontPart) != 1)){
         frontPart.subtract(a);
-        //frontPart.print(); // for debugging
         numTimesSubtracted = numTimesSubtracted + 1;
-        //result.setItem(numTimesSubtracted, numeratorIndex);
-        
         tempIndex -- ;
-        //cout << numeratorIndex;
-
-        //result.printArray(true); // for debugging
     }
-    
     if(numTimesSubtracted >0){
         this->assign(numTimesSubtracted);
         return;
     }
-    //cout << "here" << endl;
-    //frontPart.print();
-    
-    result.printArray(true);
     //When the number of digits in numerator is less than the number of digits in the denominator
     while(numeratorIndex <= this->digits.getSize()){
         //If denominator is larger than the front part of numerator then add a digit to numerator number
         numTimesSubtracted = 0; //Setting counter equal to zero
         while(a.compareAbsoluteValue(frontPart) == 1 ){ //Do while the
             if(frontPart.digits.getSize() > this->digits.getSize()){ //Checking to make sure length of numbers is okay
-                cout << "Problem with length " << endl; //Error message
             }
-            //cout << this->digits.getItem(frontPart.digits.getSize()) << endl; //Debugging statements
-            //cout << "NUMERATOR INDEX " << numeratorIndex << endl; //Debugging statements
             frontPart.digits.setItem(this->digits.getItem(numeratorIndex),frontPart.digits.getSize()); //Setting the digit in the answer array
             numeratorIndex ++; //Increment the numeratorIndex if we add another digits
         }
-        //frontPart.print(); // for debugging
         while (a.compareAbsoluteValue(frontPart) != 1 && numeratorIndex <= this->digits.getSize()){ //Comparing the numerator and denominator front part are not equal and the numerator index is less than or equal to the digit size
-            
             frontPart.subtract(a); //Subtract the front part from the numerator
-            frontPart.print(); // for debugging
             numTimesSubtracted ++; //Incrementing the counter that is counting the number of times the denominator is subtracted from the denominator
         }
-        //cout << "times subtracted " << numTimesSubtracted << " Numerator index: " << numeratorIndex << endl; // debugging statement
         //Storing the result
         if(numeratorIndex < 0) numeratorIndex = numeratorIndex + 1; // Incrementing the numerator index if index becomes negative
         result.setItem(numTimesSubtracted,numeratorIndex); //Setting the digit in the answer array
-        //result.printArray(true); // for debugging
     }
     this->digits = result; //Putting the result into the digits array
     this->removeLeadingZeros(); //Callling function that removes the leading zeroes
@@ -827,11 +746,10 @@ void BigInt::divide(const BigInt & a){
 }
 
 //Comparing two numbers to check if they are >, <, =
-// -1 if a is greater than this->digits; 0 if they are equal; 1 if this-> digits is greater than 'a'
+// -1 if a is greater than this->digits
+// 0 if they are equal
+// 1 if this-> digits is greater than 'a'
 int BigInt::compare(const BigInt & a) const{
-    
-    //this->print();
-    //a.print();
     if(this->getNegative() && a.getPositive()){
         return -1;
     }else if(this->getPositive() && a.getNegative()){
@@ -843,7 +761,8 @@ int BigInt::compare(const BigInt & a) const{
     }else if(this->digits.getSize() < a.getSize()){
         return -1;
     }else{
-        //The numbers of digits must equal. Loop through each digit and determine which BigInt is larger
+        //The numbers of digits must equal
+        //Loop through each digit and determine which BigInt is larger
         for(int i = 0; i < this->digits.getSize(); i++){
             if(this->digits.getItem(i) > a.digits.getItem(i)){
                 //If these are equal to each other continue
@@ -857,7 +776,9 @@ int BigInt::compare(const BigInt & a) const{
 }
 
 //Comparing two numbers to check if they are >, <, =
-// -1 if a is greater than this->digits; 0 if they are equal; 1 if this-> digits is greater than 'a'
+// -1 if a is greater than this->digits
+// 0 if they are equal
+// 1 if this-> digits is greater than 'a'
 int BigInt::compareAbsoluteValue(const BigInt & a) const{
     //Compares the size of the arrays
     if(this->digits.getSize() > a.getSize()){
@@ -865,12 +786,12 @@ int BigInt::compareAbsoluteValue(const BigInt & a) const{
     }else if(this->digits.getSize() < a.getSize()){
         return -1;
     }else{
-        //The numbers of digits must equal. Loop through each digit and determine which BigInt is larger
+        //The numbers of digits must equal
+        //Loop through each digit and determine which BigInt is larger
         for(int i = 0; i < this->digits.getSize(); i++){
             if(this->digits.getItem(i) > a.digits.getItem(i)){
                 //If these are equal to each other continue
                 return 1;
-                
             }else if(this->digits.getItem(i) < a.digits.getItem(i) ) {
                 return -1;
             }
@@ -918,11 +839,8 @@ void testAdditionCase(int numA, int numB){
     secondBigInt.assign(numB);
     myBigInt.add(secondBigInt);
     BigInt result;
-    cout << "actual obj : ";
-    
     result.assign(numA + numB);
     if(myBigInt.compare(result) == 0){
-        
         cout << "Test Passed - Add: " << numA << "+" << numB << "=" << numA + numB;
         cout << " *****TEST PASSED******" << endl;
     }else{
@@ -960,7 +878,6 @@ void testMultiplicationCase(int numA, int numB){
     myBigInt.assign(numA);
     secondBigInt.assign(numB);
     myBigInt.multiply(secondBigInt);
-    
     BigInt result;
     result.assign(numA * numB);
     if(myBigInt.compare(result) == 0){
@@ -981,7 +898,6 @@ void testDivideCase(int numA, int numB){
     myBigInt.assign(numA);
     secondBigInt.assign(numB);
     myBigInt.divide(secondBigInt);
-    cout << "testing:" << numA << "/" << numB << endl;
     BigInt result;
     result.assign(numA / numB);
     if(myBigInt.compare(result) == 0){
@@ -993,8 +909,135 @@ void testDivideCase(int numA, int numB){
         cout << "The expected result when Dividing a / b : " << numA / numB << endl;
         cout << "The actual result when Dividing a / b   : ";
         myBigInt.print();
+    }
+}
+
+vector<string> parseString(string inputString){
+    vector<string> parsedInput;
+    string token;
+    stringstream stringStream(inputString);
+    while(getline(stringStream,token,' ')){
+        parsedInput.push_back(token);
+    }
+    return parsedInput;
+}
+
+//if its + * / .... assume it is a operator
+// if it is a - .... we need to check to see if there is a following.
+TOKEN tokenDetector(string s){
+    if(s == "+" || s == "*" || s == "x" || s == "X" || s == "/" || s == "\\"  || s == "-" ){
+        if(s == "+" ){
+            return ADDITION;
+        }else if(s == "*" || s == "x" || s == "X" ){
+            return MULTIPLICATION;
+        }else if (s == "/" || s == "\\" ){
+            return DIVISION;
+        }else if (s == "-"){
+            return SUBTRACTION;
+        }else{
+            cout << "Error" << endl;
+            return NUMBER;
+        }
+    }else{
+        return NUMBER;
+    }
+}
+
+void RPNCalcuator(vector<string>parsedInput){
+    BigInt* zero = new BigInt();
+    zero->assign(0);
+    vector<BigInt*> myStack;
+    for(int i = 0; i < parsedInput.size(); i++){
+        if(tokenDetector(parsedInput[i]) != NUMBER){
+            //If it is an operator -- Do some math
+            
+            if(myStack.size() < 2){
+                cout << "Error: Illegal Reverse Polish Notation Syntax" << endl;
+                return;
+            }
+            //pop last two values
+            BigInt* second = new BigInt();
+            second->assign(*myStack.back());
+            myStack.pop_back();
+            BigInt* first = new BigInt();
+            first->assign(*myStack.back());
+            myStack.pop_back();
+            BigInt* result = new BigInt();
+            //Determine which operator &
+            //do the calcuation
+            TOKEN oper = tokenDetector(parsedInput[i]);
+            switch (oper){
+                case ADDITION:
+                    first->add(*second);
+                    result->assign(*first);
+                    break;
+                case DIVISION:
+                    if(second->compare(*zero) != 0){
+                        first->divide(*second);
+                        result->assign(*first);
+                        //result = first / second;
+                    }else{
+                        cout << "Attempted to divide by 0" << endl;
+                        delete zero;
+                        return;
+                    }
+                    break;
+                case SUBTRACTION:
+                    first->subtract(*second);
+                    result->assign(*first);
+                    //result = first - second;
+                    break;
+                case MULTIPLICATION:
+                    first->multiply(*second);
+                    result->assign(*first);
+                    break;
+                default:
+                    cout<< "Error: Operator not found" << endl;
+            }
+            delete first;
+            delete second;
+            //Push the result back onto the stack
+            myStack.push_back(result);
+        }else{
+            //If it is a number -- just add it to the stack.
+            if(i == parsedInput.size() - 1){
+                cout << "Error: Illegal Reverse Polish Notation Syntax" << endl;
+                return;
+            }
+            BigInt* number = new BigInt();
+            number->assign(parsedInput[i].c_str());
+            myStack.push_back(number);
         }
     }
+    if(zero){
+        delete zero;
+    }
+    if(myStack.size() > 1){
+        cout << "Error: Illegal Reverse Polish Notation Syntax" << endl;
+        return;
+    }
+    cout << "Output is:  ";
+    myStack.back()->print();
+}
+
+void testRPNProvidedUseCases(){
+    vector<string> useCases;
+    useCases.push_back("5 1 2 + 4 * + 3 -");
+    useCases.push_back("123 + 321"); //should fail
+    useCases.push_back("123 321 +");
+    useCases.push_back("123 2 + 50 25 25 + + + + + "); //should fail
+    useCases.push_back("123 2 + 50 25 25 + + "); //should fail
+    useCases.push_back("123 2 + 50 25 25 + + + + + "); //should fail
+    useCases.push_back("123 2 + 50 25 25 + + *"); //should pass
+    useCases.push_back("99999999999999999999999999999999999999999999999 2 * 1 -");
+    useCases.push_back("-3 -4 *");
+    useCases.push_back("-3000 15 /");
+    for (int i = 0; i < useCases.size(); i++){
+        cout << endl << "Input is:   " << useCases[i] << endl;
+        vector<string> parsedInput = parseString(useCases[i]);
+        RPNCalcuator(parsedInput);
+    }
+}
 
 void testAddition(){
     cout << "Tests for Addition: " << endl;
@@ -1277,159 +1320,27 @@ void testDivide(){
     testDivideCase(1009, -2);
     testDivideCase(100000009, 2);
     testDivideCase(1000009, -2);
-    //testDivideCase(1009, 2);
-    //testDivideCase(100000009, 2);
-    //testDivideCase(1000009, 2);
+    testDivideCase(1009, 5);
+    testDivideCase(1000009, -5);
     cout << endl;
 }
 
-vector<string> parseString(string inputString){
-    vector<string> parsedInput;
-    string token;
-    stringstream stringStream(inputString);
-    while(getline(stringStream,token,' ')){
-        parsedInput.push_back(token);
-        //cout << token << " " << endl;
-    }
-    return parsedInput;
-}
-
-//if its + * / .... assume it is a operator
-// if it is a - .... we need to check to see if there is a following.
-TOKEN tokenDetector(string s){
-    
-    if(s == "+" || s == "*" || s == "x" || s == "X" || s == "/" || s == "\\"  || s == "-" ){
-        
-        //cout <<  s <<" is an operator "<<  endl;
-        
-        if(s == "+" ){
-            return ADDITION;
-        }else if(s == "*" || s == "x" || s == "X" ){
-            return MULTIPLICATION;
-        }else if (s == "/" || s == "\\" ){
-            return DIVISION;
-        }else if (s == "-"){
-            return SUBTRACTION;
-        }else{
-            cout << "Error" << endl;
-            return NUMBER;
-        }
-        
-    }else{
-        //cout <<  s <<" is a number "<< endl;
-        return NUMBER;
-    }
-}
-
-void RPNCalcuator(vector<string>parsedInput){
-    BigInt* zero = new BigInt();
-    zero->assign(0);
-    
-    vector<BigInt*> myStack;
-    for(int i = 0; i < parsedInput.size(); i++){
-        if(tokenDetector(parsedInput[i]) != NUMBER){
-            //If it is an operator -- Do some math
-            
-            if(myStack.size() < 2){
-                cout << "Error: Illegal Reverse Polish Notation Syntax" << endl;
-                return;
-            }
-            //pop last two values
-            BigInt* second = new BigInt();
-            second->assign(*myStack.back());
-            myStack.pop_back();
-            
-            BigInt* first = new BigInt();
-            first->assign(*myStack.back());
-            myStack.pop_back();
-            BigInt* result = new BigInt();
-            
-            //Determine which operator & do the calcuation
-            TOKEN oper = tokenDetector(parsedInput[i]);
-            switch (oper){
-                case ADDITION:
-                    first->add(*second);
-                    result->assign(*first);
-                    break;
-                case DIVISION:
-                    if(second->compare(*zero) != 0){
-                        first->divide(*second);
-                        result->assign(*first);
-                    }else{
-                        cout << "Attempted to divide by 0" << endl;
-                        delete zero;
-                        return;
-                    }
-                    break;
-                case SUBTRACTION:
-                    first->subtract(*second);
-                    result->assign(*first);
-                    break;
-                case MULTIPLICATION:
-                    first->multiply(*second);
-                    result->assign(*first);
-                    break;
-                default:
-                    cout<< "Error: Operator not found" << endl;
-            }
-            delete first;
-            delete second;
-            myStack.push_back(result); //Push the result back onto the stack
-        }else{
-            //If it is a number -- just add it to the stack.
-            if(i == parsedInput.size() - 1){
-                cout << "Error: Illegal Reverse Polish Notation Syntax" << endl;
-                return;
-            }
-            BigInt* number = new BigInt();
-            number->assign(parsedInput[i].c_str());
-            myStack.push_back(number); //myStack.push_back(atoi(parsedInput[i].c_str()));
-        }
-    }
-    if(zero){
-        delete zero;
-    }
-    if(myStack.size() > 1){
-        cout << "Error: Illegal Reverse Polish Notation Syntax" << endl;
-        return;
-    }
-    cout << "Answer is: ";
-    myStack.back()->print();
-}
-
-void testRPNProvidedUseCases(){
-    vector<string> useCases;
-    useCases.push_back("5 1 2 + 4 * + 3 -");
-    useCases.push_back("123 2 + 50 25 25 + + *");
-    useCases.push_back("123 321 +");
-    useCases.push_back("123 + 321"); //should fail
-    useCases.push_back("123 2 + 50 25 25 + + "); //should fail
-    useCases.push_back("123 2 + 50 25 25 + + + + + "); //should fail
-    useCases.push_back("99999999999999999999999999999999999999999999999 2 * 1 -");
-    useCases.push_back("123 2 + 50 25 25 + + + + + ");
-    
-    for (int i = 0; i < useCases.size(); i++){
-        vector<string> parsedInput = parseString(useCases[i]);
-        RPNCalcuator(parsedInput);
-    }
-}
-
 int main(int argc, const char * argv[]) {
-    //Test Scenarios
+    //The following are test cases for the various function. Uncomment if you want to see the test cases displayed.
+    
     //testAddition();
     //testSubtraction();
     //testMultiply();
-    testDivide();
+    //testDivide();
     //testAdditionNegative();
     //testSubtractionNegative();
-    //testRPNProvidedUseCases();
     
+    testRPNProvidedUseCases();
     
-    
-    /*
     string inputString;
     while (true) {
         cout << endl;
+        cout << "*********************************************" << endl;
         cout << "Enter RPN expression OR Enter Q or q to quit: ";
         getline(cin, inputString);
         if (inputString == "q" || inputString == "Q" ) {
@@ -1438,7 +1349,7 @@ int main(int argc, const char * argv[]) {
         vector<string> parsedInput = parseString(inputString);
         RPNCalcuator(parsedInput);
     }
-     */
     cout << "end" << endl;
     return 0;
 }
+
