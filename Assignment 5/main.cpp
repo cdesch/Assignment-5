@@ -673,12 +673,12 @@ void BigInt::multiply(const BigInt & a){
     }
     this->negativeHandled = false;
 }
-
 //Dividing two numbers
 void BigInt::divide(const BigInt & a){
-    //Assumption: this->digits will always be bigger than 1. A is divisable by B
+    //Assumption 2: this->digits will always be bigger than 1. A is divisable by B
     this->negativeHandled = true;
     this->negativeHandledDivideOverride = true;
+    
     if(this->getNegative() && a.getNegative()){
         this->setPositive(true);
     }else if(this->getNegative() && a.getPositive()){
@@ -686,62 +686,112 @@ void BigInt::divide(const BigInt & a){
     }else if(this->getPositive() && a.getNegative()){
         this->setNegative(true);
     }
-    int numeratorIndex = this->digits.getSize(); //Getting size of numerator *******
+    
+    BigInt one;
+    one.assign(1);
+    if(a.compareAbsoluteValue(one) == 0){
+        return;
+    }
+    
     BigInt frontPart;
     frontPart.setNegativeHandledDivideOverride(true);
     SmcArray<int> frontDigits;
-    for(int i = 0; i < numeratorIndex; i++){ //Looping to get digits *******
+    for(int i = 0; i < a.getSize(); i++){ //Looping to get digits
         frontDigits.setItem(this->digits.getItem(i), i);
     }
     
     if(a.compareAbsoluteValue(frontPart) == -1){ //Checking to see if numerator is less than the denominator
         return;
     }
-    //Check for divide by 1
-    BigInt one;
-    one.assign(1);
-    if(a.compareAbsoluteValue(one) == 0){
-        return;
-    }
+    
     SmcArray<int> result;
     result.changeSize(this->digits.getSize());
     int numTimesSubtracted = 0; //Initializing variable that counts the number of times subtracting
+    int numeratorIndex = a.getSize(); //Getting size of numberator
+    
     frontPart.digits = frontDigits; //Copying front digits into part digits
+    
     //When the number of digits in numerator and denominator are the same and making sure the numbers are different
-    int tempIndex = numeratorIndex;
-    while (a.getSize() == this->digits.getSize() && (a.compareAbsoluteValue(frontPart) != 1)){
+    while (numeratorIndex == this->digits.getSize() && (a.compareAbsoluteValue(frontPart) != 1)){
         frontPart.subtract(a);
-        frontPart.print();
+        //frontPart.print(); // for debugging
         numTimesSubtracted = numTimesSubtracted + 1;
-        tempIndex -- ;
+        result.setItem(numTimesSubtracted,numeratorIndex);
+        //result.printArray(true); // for debugging
     }
-    if(numTimesSubtracted >0){
+    
+    if(numTimesSubtracted > 0 ){
         this->assign(numTimesSubtracted);
         return;
     }
-    //When the number of digits in numerator is less than the number of digits in the denominator
-    while(a.getSize() <= this->digits.getSize()){
+    
+    //If a it is the length of 1
+    if(a.getSize() == 1){
+        SmcArray<int> result2;
+        int remainder = 0;
+        int divisor = a.digits.getItem(0);
+        for(int i = 0; i < this->getSize(); i++){
+            //If the demoninator is less than
+            int numerator = this->digits.getItem(i);
+            if(remainder != 0) numerator = (remainder * 10) + numerator;
+            
+            
+            int timesSubtracted = 0;
+            while (numerator >= divisor){
+                numerator -= divisor;
+                timesSubtracted++;
+            }
+            /*
+            if(timesSubtracted >= 10){
+                cout << "OMG greater than 10" << endl;
+            }*/
+            result2.pushItem(timesSubtracted);
+            remainder = numerator;
+        }
+        
+        this->digits = result2;
+        this->removeLeadingZeros();
+        this->negativeHandled = false;
+        this->negativeHandledDivideOverride = false;
+        return;
+    }
+    
+    //When the number of digits in numerator is greater than the number of digits in the denominator
+    while(numeratorIndex < this->digits.getSize()){
+        
         //If denominator is larger than the front part of numerator then add a digit to numerator number
         numTimesSubtracted = 0; //Setting counter equal to zero
         while(a.compareAbsoluteValue(frontPart) == 1 ){ //Do while the
             if(frontPart.digits.getSize() > this->digits.getSize()){ //Checking to make sure length of numbers is okay
+                cout << "Problem with length " << endl; //Error message
             }
+            //cout << this->digits.getItem(frontPart.digits.getSize()) << endl; //Debugging statements
+            //cout << "NUMERATOR INDEX " << numeratorIndex << endl; //Debugging statements
             frontPart.digits.setItem(this->digits.getItem(numeratorIndex),frontPart.digits.getSize()); //Setting the digit in the answer array
             numeratorIndex ++; //Increment the numeratorIndex if we add another digits
         }
+        //frontPart.print(); // for debugging
+        
         while (a.compareAbsoluteValue(frontPart) != 1 && numeratorIndex <= this->digits.getSize()){ //Comparing the numerator and denominator front part are not equal and the numerator index is less than or equal to the digit size
+
             frontPart.subtract(a); //Subtract the front part from the numerator
+            //frontPart.print(); // for debugging
             numTimesSubtracted ++; //Incrementing the counter that is counting the number of times the denominator is subtracted from the denominator
         }
-        //Storing the result
+        
+        //cout << "times subtracted " << numTimesSubtracted << " Numerator index: " << numeratorIndex << endl; // debugging statement
+        //Storeing the result
         if(numeratorIndex < 0) numeratorIndex = numeratorIndex + 1; // Incrementing the numerator index if index becomes negative
-        result.setItem(numTimesSubtracted,numeratorIndex); //Setting the digit in the answer array //Probably wrong
+        result.setItem(numTimesSubtracted,numeratorIndex); //Setting the digit in the answer array
+        //result.printArray(true); // for debugging
     }
     this->digits = result; //Putting the result into the digits array
     this->removeLeadingZeros(); //Callling function that removes the leading zeroes
+    
     this->negativeHandled = false;
     this->negativeHandledDivideOverride = false;
 }
+
 
 //Comparing two numbers to check if they are >, <, =
 // -1 if a is greater than this->digits
@@ -1261,6 +1311,7 @@ void testMultiply(){
 void testDivide(){
     cout << "Tests for Division: " << endl;
     cout << "-------------------" << endl;
+    
     testDivideCase(1, 55);
     testDivideCase(5, 5556);
     testDivideCase(1315451, 55);
@@ -1356,7 +1407,7 @@ int main(int argc, const char * argv[]) {
     //testAdditionNegative();
     //testSubtractionNegative();
     
-    //testRPNProvidedUseCases();
+    testRPNProvidedUseCases();
     runRPN();
        cout << "end" << endl;
     return 0;
