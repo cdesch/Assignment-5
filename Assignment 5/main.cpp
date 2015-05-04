@@ -315,7 +315,7 @@ public:
     int convertCharToInt(char c);
     bool handleNegativesForAddition(const BigInt & a);
     bool handleNegativesForSubtraction(const BigInt & a);
-    
+    bool checkDigitsZero(BigInt& bigInt);
     void setDigits(SmcArray<int> a);
     void removeLeadingZeros();
     void setNegative(bool negative){
@@ -767,22 +767,28 @@ void BigInt::divide(const BigInt & a){
             }
             //cout << this->digits.getItem(frontPart.digits.getSize()) << endl; //Debugging statements
             //cout << "NUMERATOR INDEX " << numeratorIndex << endl; //Debugging statements
+            
+            
             frontPart.digits.setItem(this->digits.getItem(numeratorIndex),frontPart.digits.getSize()); //Setting the digit in the answer array
             numeratorIndex ++; //Increment the numeratorIndex if we add another digits
         }
-        //frontPart.print(); // for debugging
         
-        while (a.compareAbsoluteValue(frontPart) != 1 && numeratorIndex <= this->digits.getSize()){ //Comparing the numerator and denominator front part are not equal and the numerator index is less than or equal to the digit size
-
-            frontPart.subtract(a); //Subtract the front part from the numerator
-            //frontPart.print(); // for debugging
-            numTimesSubtracted ++; //Incrementing the counter that is counting the number of times the denominator is subtracted from the denominator
+        //Check if the rest of the digits are zero
+        if(this->checkDigitsZero(frontPart)){
+            while (a.compareAbsoluteValue(frontPart) != 1 && numeratorIndex <= this->digits.getSize()){ //Comparing the numerator and denominator front part are not equal and the numerator index is less than or equal to the digit size
+                //cout << numTimesSubtracted << endl;
+                //frontPart.print();
+                frontPart.subtract(a); //Subtract the front part from the numerator
+                numTimesSubtracted ++; //Incrementing the counter that is counting the number of times the denominator is subtracted from the denominator
+            }
         }
+  
+
         
         //cout << "times subtracted " << numTimesSubtracted << " Numerator index: " << numeratorIndex << endl; // debugging statement
         //Storeing the result
         if(numeratorIndex < 0) numeratorIndex = numeratorIndex + 1; // Incrementing the numerator index if index becomes negative
-        result.setItem(numTimesSubtracted,numeratorIndex); //Setting the digit in the answer array
+        result.setItem(numTimesSubtracted, numeratorIndex); //Setting the digit in the answer array
         //result.printArray(true); // for debugging
     }
     this->digits = result; //Putting the result into the digits array
@@ -790,6 +796,16 @@ void BigInt::divide(const BigInt & a){
     
     this->negativeHandled = false;
     this->negativeHandledDivideOverride = false;
+}
+
+bool BigInt::checkDigitsZero(BigInt& bigInt){
+    for (int i = 0; i < bigInt.getSize(); i++){
+        if (bigInt.digits.getItem(i) != 0){
+            return true;
+        }
+    }
+    return false;
+            
 }
 
 
@@ -1376,6 +1392,12 @@ void testDivide(){
     testDivideCase(1000009, -2);
     testDivideCase(1009, 5);
     testDivideCase(1000009, -5);
+         testDivideCase(200000000,42);
+     
+
+    testDivideCase(3000,15);
+    testDivideCase(3000,10);
+    testDivideCase(2000,20);
     //testDivideCase(99999999999999999999999999999999999999999999999, 2);
 
     cout << endl;
