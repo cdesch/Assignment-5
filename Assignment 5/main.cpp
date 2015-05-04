@@ -693,6 +693,7 @@ void BigInt::divide(const BigInt & a){
     for(int i = 0; i < numeratorIndex; i++){ //Looping to get digits *******
         frontDigits.setItem(this->digits.getItem(i), i);
     }
+    
     if(a.compareAbsoluteValue(frontPart) == -1){ //Checking to see if numerator is less than the denominator
         return;
     }
@@ -708,8 +709,9 @@ void BigInt::divide(const BigInt & a){
     frontPart.digits = frontDigits; //Copying front digits into part digits
     //When the number of digits in numerator and denominator are the same and making sure the numbers are different
     int tempIndex = numeratorIndex;
-    while (numeratorIndex == this->digits.getSize() && (a.compareAbsoluteValue(frontPart) != 1)){
+    while (a.getSize() == this->digits.getSize() && (a.compareAbsoluteValue(frontPart) != 1)){
         frontPart.subtract(a);
+        frontPart.print();
         numTimesSubtracted = numTimesSubtracted + 1;
         tempIndex -- ;
     }
@@ -718,7 +720,7 @@ void BigInt::divide(const BigInt & a){
         return;
     }
     //When the number of digits in numerator is less than the number of digits in the denominator
-    while(numeratorIndex <= this->digits.getSize()){
+    while(a.getSize() <= this->digits.getSize()){
         //If denominator is larger than the front part of numerator then add a digit to numerator number
         numTimesSubtracted = 0; //Setting counter equal to zero
         while(a.compareAbsoluteValue(frontPart) == 1 ){ //Do while the
@@ -733,7 +735,7 @@ void BigInt::divide(const BigInt & a){
         }
         //Storing the result
         if(numeratorIndex < 0) numeratorIndex = numeratorIndex + 1; // Incrementing the numerator index if index becomes negative
-        result.setItem(numTimesSubtracted,numeratorIndex); //Setting the digit in the answer array
+        result.setItem(numTimesSubtracted,numeratorIndex); //Setting the digit in the answer array //Probably wrong
     }
     this->digits = result; //Putting the result into the digits array
     this->removeLeadingZeros(); //Callling function that removes the leading zeroes
@@ -888,7 +890,7 @@ void testMultiplicationCase(int numA, int numB){
     }
 }
 
-void testDivideCase(int numA, int numB){
+void testDivideCase(long numA, long numB){
     BigInt myBigInt;
     BigInt secondBigInt;
     myBigInt.assign(numA);
@@ -961,6 +963,8 @@ void RPNCalcuator(vector<string>parsedInput){
             BigInt* result = new BigInt();
             //Determine which operator &
             //do the calcuation
+            
+            
             TOKEN oper = tokenDetector(parsedInput[i]);
             switch (oper){
                 case ADDITION:
@@ -1018,6 +1022,7 @@ void RPNCalcuator(vector<string>parsedInput){
 
 void testRPNProvidedUseCases(){
     vector<string> useCases;
+    /*
     useCases.push_back("5 1 2 + 4 * + 3 -");
     useCases.push_back("123 + 321"); //should fail
     useCases.push_back("123 321 +");
@@ -1025,6 +1030,8 @@ void testRPNProvidedUseCases(){
     useCases.push_back("123 2 + 50 25 25 + + "); //should fail
     useCases.push_back("123 2 + 50 25 25 + + + + + "); //should fail
     useCases.push_back("123 2 + 50 25 25 + + *"); //should pass
+     */
+    useCases.push_back("99999999999999999999999999999999999999999999999 2 / 1 -");
     useCases.push_back("99999999999999999999999999999999999999999999999 2 * 1 -");
     useCases.push_back("-3 -4 *");
     useCases.push_back("-3000 15 /");
@@ -1318,21 +1325,12 @@ void testDivide(){
     testDivideCase(1000009, -2);
     testDivideCase(1009, 5);
     testDivideCase(1000009, -5);
+    //testDivideCase(99999999999999999999999999999999999999999999999, 2);
+
     cout << endl;
 }
 
-int main(int argc, const char * argv[]) {
-    //The following are test cases for the various function. Uncomment if you want to see the test cases displayed.
-    
-    //testAddition();
-    //testSubtraction();
-    //testMultiply();
-    //testDivide();
-    //testAdditionNegative();
-    //testSubtractionNegative();
-    
-    testRPNProvidedUseCases();
-    
+void runRPN(){
     string inputString;
     while (true) {
         cout << endl;
@@ -1345,7 +1343,22 @@ int main(int argc, const char * argv[]) {
         vector<string> parsedInput = parseString(inputString);
         RPNCalcuator(parsedInput);
     }
-    cout << "end" << endl;
+
+}
+
+int main(int argc, const char * argv[]) {
+    //The following are test cases for the various function. Uncomment if you want to see the test cases displayed.
+    
+    //testAddition();
+    //testSubtraction();
+    //testMultiply();
+    testDivide();
+    //testAdditionNegative();
+    //testSubtractionNegative();
+    
+    //testRPNProvidedUseCases();
+    runRPN();
+       cout << "end" << endl;
     return 0;
 }
 
