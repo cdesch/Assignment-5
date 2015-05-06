@@ -1392,12 +1392,13 @@ void testDivide(){
     testDivideCase(1000009, -2);
     testDivideCase(1009, 5);
     testDivideCase(1000009, -5);
-         testDivideCase(200000000,42);
+    testDivideCase(200000000,42);
      
 
     testDivideCase(3000,15);
     testDivideCase(3000,10);
     testDivideCase(2000,20);
+    testDivideCase(3005,10);
     //testDivideCase(99999999999999999999999999999999999999999999999, 2);
 
     cout << endl;
@@ -1416,7 +1417,6 @@ void runRPN(){
         vector<string> parsedInput = parseString(inputString);
         RPNCalcuator(parsedInput);
     }
-
 }
 
 int main(int argc, const char * argv[]) {
