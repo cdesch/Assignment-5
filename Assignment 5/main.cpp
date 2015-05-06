@@ -7,6 +7,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <stdlib.h>
 
 enum TOKEN { ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION, NUMBER };
 using namespace std;
